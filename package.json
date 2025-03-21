@@ -1,0 +1,50 @@
+{
+  "name": "tsup-lib-template",
+  "version": "0.0.0",
+  "private": false,
+  "description": "Typescript library template",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "pnpm tsup --watch",
+    "bundle": "pnpm run build",
+    "build": "pnpm tsup src/index.ts --format esm,cjs --dts --minify",
+    "lint:fix": "pnpm eslint . --fix",
+    "format:fix": "pnpm prettier . --write",
+    "typecheck": "pnpm tsup --dts-only",
+    "test": "NODE_ENV=test pnpm vitest --ui --mode development",
+    "test:ci": "pnpm vitest run --coverage",
+    "test:watch": "pnpm vitest --watch"
+  },
+  "license": "MIT",
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {
+    "@testing-library/react": "*",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitest/coverage-v8": "*",
+    "@vitest/ui": "*",
+    "eslint": "*",
+    "prettier": "*",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "*",
+    "vitest": "*"
+  }
+}
