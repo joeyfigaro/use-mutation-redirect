@@ -1,8 +1,23 @@
 {
-  "name": "tsup-lib-template",
+  "name": "@joeyfigaro/use-mutation-redirect",
   "version": "0.0.0",
   "private": false,
-  "description": "Typescript library template",
+  "description": "React hook for tanstack-query for redirecting on mutation result",
+  "author": "Joey Figaro <joey@joeyfigaro.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joeyfigaro/use-mutation-redirect.git"
+  },
+  "keywords": [
+    "react",
+    "tanstack-query",
+    "redirection",
+    "mutation",
+    "hooks",
+    "react-query",
+    "side-effects",
+    "navigation"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -28,7 +43,8 @@
     "typecheck": "pnpm tsup --dts-only",
     "test": "NODE_ENV=test pnpm vitest --ui --mode development",
     "test:ci": "pnpm vitest run --coverage",
-    "test:watch": "pnpm vitest --watch"
+    "test:watch": "pnpm vitest --watch",
+    "release": "pnpm changeset"
   },
   "license": "MIT",
   "peerDependencies": {
