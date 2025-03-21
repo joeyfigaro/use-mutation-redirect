@@ -19,7 +19,7 @@ I plan to offer support for older versions of React and RQ (TQ?)
 
 1. import `useMutationRedirect`
 2. use it in place of `useMutation`
-3. provide options for `useMutation` as the first argument, and `UseMutationRedirectOptions` as the second
+3. provide options for `useMutation` as the first argument, and [`UseMutationRedirectOptions`](https://github.com/joeyfigaro/use-mutation-redirect/blob/main/src/lib/useMutationRedirect.ts#L12-L67) as the second
 
 ```tsx
 import { useState } from 'react';
