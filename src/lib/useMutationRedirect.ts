@@ -1,64 +1,22 @@
-// import type { Mutation, UseMutationResult } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationResult,
+  type MutationOptions,
+} from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 // type ToCallbackFn<Data> = (data: Data) => string;
 
-type Trigger<Data, Err, Vars, Ctx> = () => boolean | boolean;
+type Trigger<Data, Err, Vars, Ctx> = (
+  mutation: UseMutationResult<Data, Err, Vars, Ctx>,
+) => boolean | boolean;
 
 type UseMutationRedirectOptions<
   Data = unknown,
-  Err = Error | unknown,
-  Vars = unknown,
-  Ctx = unknown,
+  Error = unknown,
+  Variables = void,
+  Context = unknown,
 > = {
-  // /**
-  //  * @name mutation
-  //  * @description The mutation to use
-  //  * @typedef Mutation
-  //  * @example
-  //  * ```
-  //  * const login = () => useMutation({ mutationFn: api.login });
-  //  * const loginAndRedirectOnSuccess = useMutationRedirect({
-  //  *   mutation: login,
-  //  *   trigger: () => mutationResult.failureCount > 3,
-  //  *   to: '/dashboard',
-  //  *   navigateFn,
-  //  * })
-  //  *
-  //  * OR
-  //  *
-  //  * const loginAndRedirectOnSuccess = useMutationRedirect({
-  //  *   mutation: login,
-  //  *   trigger: login.isSuccess,
-  //  *   to: '/dashboard',
-  //  *   navigateFn,
-  //  * })
-  //  * ```
-  //  */
-  // mutation: Mutation<Data, Err, Vars, Ctx>;
-  /**
-   * @name trigger
-   * @description When to fire the redirect; can be a boolean or a function that returns a boolean
-   * @typedef Trigger
-   * @example
-   * ```
-   * const login = () => useMutation({ mutationFn: api.login });
-   * const loginAndRedirectOnSuccess = useMutationRedirect({
-   *   trigger: () => login.failureCount > 3,
-   *   to: '/dashboard',
-   *   navigateFn,
-   * })
-   *
-   * OR
-   *
-   * const loginAndRedirectOnSuccess = useMutationRedirect({
-   *   trigger: login.isSuccess,
-   *   to: '/dashboard',
-   *   navigateFn,
-   * })
-   * ```
-   */
-  trigger: Trigger<Data, Err, Vars, Ctx>;
   /**
    * @name to
    * @description The route to redirect to
@@ -68,10 +26,10 @@ type UseMutationRedirectOptions<
    * ```
    * or
    * ```
-   * () => `/dashboard/${login.data.id}`
+   * () => `/dashboard/${data.id}`
    * ```
    */
-  to: string | (() => string);
+  to: string | ((data?: Data) => string);
   /**
    * @name navigateFn
    * @description The function used to handle the redirect
@@ -83,14 +41,8 @@ type UseMutationRedirectOptions<
    * const AuthView = () => {
    *   const navigate = useNavigate();
    *   const navigateFn = (route: string) => navigate(route);
-   *   // could also be something a little more forceful if you're dealing with two separate apps/history stacks
-   *   // e.g. const navigateFn = (route: string) => {
-   *   //   window.location.href = route;
-   *   //   return;
-   *   // }
-   *   const login = useMutation({ mutationFn: api.login });
-   *   const loginAndRedirectOnSuccess = useMutationRedirect({
-   *     mutation: login.mutate,
+   *   const loginAndRedirect = useMutationRedirect({
+   *     mutationFn: api.login,
    *     to: '/dashboard',
    *     // OR
    *     // to: (data) => `/dashboard/${data.id}`,
@@ -102,33 +54,52 @@ type UseMutationRedirectOptions<
    * ```
    */
   navigateFn: (route: string) => void;
+  /**
+   * @name trigger
+   * @description The function used to determine if the redirect should happen
+   * @description will redirect when mutation succeeds by default
+   * @example
+   * ```
+   * const redirectOnSuccess = (result) => result.isSuccess;
+   * const redirectOnError = (result) => result.isError;
+   * const redirectOnThreeFailures = (result) => result.isError && result.errorCount === 3;
+   * ```
+   */
+  trigger?: Trigger<Data, Error, Variables, Context>;
 };
 
 export function useMutationRedirect<
   Data = unknown,
-  Err = Error | unknown,
-  Vars = unknown,
-  Ctx = unknown,
->({
-  to,
-  trigger,
-  navigateFn,
-}: UseMutationRedirectOptions<Data, Err, Vars, Ctx>) {
-  if (!to) {
-    throw new Error('useMutationRedirect requires to to be provided');
-  } else if (!navigateFn) {
-    throw new Error('useMutationRedirect requires navigateFn to be provided');
-  } else if (!trigger) {
-    throw new Error('useMutationRedirect requires a trigger to be provided');
+  Error = unknown,
+  Variables = void,
+  Context = unknown,
+>(
+  options: MutationOptions<Data, Error, Variables, Context>,
+  config: UseMutationRedirectOptions<Data, Error, Variables, Context>,
+): UseMutationResult<Data, Error, Variables, Context> {
+  if (!config) {
+    throw new Error('useMutationRedirect requires config to be provided');
+  } else if (!config.navigateFn) {
+    throw new Error(
+      'useMutationRedirect requires config.navigateFn to be provided',
+    );
+  } else if (!config.to) {
+    throw new Error('useMutationRedirect requires config.to to be provided');
   }
 
+  const mutation = useMutation<Data, Error, Variables, Context>(options);
+  const { trigger, to, navigateFn } = config;
+  const fallbackTrigger = trigger
+    ? trigger
+    : (data: typeof mutation) => data?.isSuccess;
+  const computedTrigger = fallbackTrigger(mutation);
+
   useEffect(() => {
-    const computedTrigger = typeof trigger === 'function' ? trigger() : trigger;
-
     if (computedTrigger) {
-      const computedRoute = typeof to === 'function' ? to() : to;
-
-      return navigateFn(computedRoute);
+      const computedRoute = typeof to === 'function' ? to(mutation.data) : to;
+      navigateFn(computedRoute);
     }
-  }, [trigger, to, navigateFn]);
+  }, [computedTrigger, mutation.data, to, navigateFn]);
+
+  return mutation;
 }
