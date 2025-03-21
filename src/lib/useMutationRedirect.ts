@@ -5,8 +5,6 @@ import {
 } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-// type ToCallbackFn<Data> = (data: Data) => string;
-
 type Trigger<Data, Err, Vars, Ctx> = (
   mutation: UseMutationResult<Data, Err, Vars, Ctx>,
 ) => boolean | boolean;

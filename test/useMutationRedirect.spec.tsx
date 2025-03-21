@@ -4,14 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMutationRedirect } from '../src';
 import { renderWithClient } from './utils';
 
-// const Wrapper = ({
-//   children,
-//   client,
-// }: {
-//   children: React.ReactNode;
-//   client: QueryClient;
-// }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
-
 describe('useMutationRedirect', () => {
   describe('to', () => {
     it('should redirect to the given route', async () => {
