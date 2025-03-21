@@ -1,7 +1,5 @@
 # @joeyfigaro/use-mutation-redirect
 
-[![npm version](https://badgen.net/npm/v/@joeyfigaro/use-mutation-redirect)](https://npm.im/@joeyfigaro/use-mutation-redirect) [![npm downloads](https://badgen.net/npm/dm/@joeyfigaro/use-mutation-redirect)](https://npm.im/tsup-lib-template)
-
 ## Installing
 
 ```shell
