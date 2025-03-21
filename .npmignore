@@ -1,6 +1,5 @@
-src/**/*
-.vscode/**/*
-.github/**/*
-.envrc*
-.prettier*
-.eslint*
+**/*
+!dist/**/*
+!package.json
+!README.md
+!LICENSE
